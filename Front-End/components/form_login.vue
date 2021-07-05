@@ -207,7 +207,7 @@ export default {
       this.email = this.$store.state.userInfos.email;
       this.pseudo = this.$store.state.userInfos.pseudo;
       this.description = this.$store.state.userInfos.description;
-      this.file = this.$store.state.userInfos.image;
+      this.file = this.$store.state.userInfos.avatar;
       return;
     }
   },

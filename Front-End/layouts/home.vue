@@ -5,7 +5,6 @@
       color="#93441A"
       prominent
       app
-      
     >
       <template v-slot:img="{ props }">
         <v-img
@@ -25,7 +24,7 @@
     <v-navigation-drawer v-model="drawer" app>
       <v-sheet color="background" class="pa-5 d-flex flex-column align-center">
         <v-avatar class="mb-5" color="primary" size="120"
-          ><img style="object-fit : cover" :src="user.image" alt=""
+          ><img style="object-fit : cover" :src="user.avatar" alt=""
         /></v-avatar>
         <div class="mb-5">{{ user.pseudo }}</div>
         <div class="font-italic">"{{ user.description }}"</div>
@@ -62,10 +61,8 @@
     </v-navigation-drawer>
 
     <v-main>
-      <v-app class= " background ">
-        <v-container>
-          <Nuxt />
-        </v-container>
+      <v-app class=" background ">
+        <Nuxt />
       </v-app>
     </v-main>
   </v-app>
@@ -78,17 +75,24 @@ export default {
     drawer: true
   }),
   mounted: function() {
-    //console.log(this.$store.state.user.userId);
-    if (this.$store.state.user.userId == -1) {
+    if (
+      this.$store.state.user.userId == -1 ||
+      this.$store.state.status == "error_login"
+    ) {
+      localStorage.removeItem("user");
       this.$router.push("/account");
       return;
     }
-    this.$store.dispatch("getUserInfo", this.$store.state.user.userId);
+    this.$store.dispatch("getUserInfo", this.$store.state.user);
+    this.$store.dispatch("storeWall/getAllUser");
+    this.$store.dispatch("storeWall/getAllPost");
+    this.$store.dispatch("storeWall/getAllLike");
+    this.$store.dispatch("storeWall/getAllReply");
   },
   computed: {
     ...mapState({
       user: "userInfos"
-    })
+    }),
   },
   methods: {
     logout: function() {

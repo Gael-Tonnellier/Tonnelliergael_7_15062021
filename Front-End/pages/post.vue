@@ -12,7 +12,7 @@
         accept="image/png, image/jpeg, image/bmp, image/gif"
         placeholder="Upload ton image !"
         prepend-icon="mdi-camera"
-        label="Taille maximum : 10 MB"
+        label="Taille maximum : 6 MB"
         v-model="upload"
         @change="previewImage"
       ></v-file-input>
@@ -121,8 +121,8 @@ export default {
     rules: [
       value =>
         !value ||
-        value.size < 10000000 ||
-        "Votre image/gif doit faire moins de 10MB"
+        value.size < 6000000 ||
+        "Votre image/gif doit faire moins de 6MB"
     ],
     e6: 1,
     file: null,

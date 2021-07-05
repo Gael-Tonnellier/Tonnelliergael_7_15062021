@@ -23,7 +23,7 @@ exports.signup = (req, res, next) => {
           email: req.body.email,
           Password: hash,
           Description: req.body.description,
-          image: req.body.image,
+          avatar: req.body.image,
         };
 
         myDb.query("INSERT INTO users SET ?", users, function (err, result) {
@@ -84,7 +84,7 @@ exports.info = (req, res, next) => {
           pseudo: result[0].pseudo,
           created: result[0].Created,
           description: result[0].description,
-          image: result[0].image,
+          avatar: result[0].avatar,
         });
       }
     });
@@ -104,4 +104,17 @@ exports.delete = (req,res,next) =>{
     });
   });
 
+};
+
+exports.getAllUsers =(req,res) =>{
+  myDb.connect(function(err){
+    if (err) throw err;
+    console.log('Connecté à la DB');
+    myDb.query('SELECT idUsers, pseudo, avatar, description FROM users',function (err,response){
+      if(err) throw err;
+      else {
+        res.status(200).json({response, message:'Récupération des Utilisateurs'})
+      }
+    })
+  })
 }
