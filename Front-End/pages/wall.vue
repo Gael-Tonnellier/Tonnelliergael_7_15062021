@@ -69,13 +69,18 @@
               <p
                 v-bind="attrs"
                 v-on="on"
-                class=" primary rounded px-5 text-caption ml-auto white--text"
+                class=" primary rounded px-2 text-caption ml-auto white--text"
               >
                 {{ post.userLiked.length }} personnes aime cette publication
               </p>
             </template>
-            <v-list-item-content v-if="post.userLiked < 1 ">Soyez le premier à mettre un "J'aime"</v-list-item-content>
-            <v-list-item-content  v-for="user in post.userLiked" :key="user.pseudo">
+            <v-list-item-content v-if="post.userLiked < 1"
+              >Soyez le premier à mettre un "J'aime"</v-list-item-content
+            >
+            <v-list-item-content
+              v-for="user in post.userLiked"
+              :key="user.pseudo"
+            >
               {{ user.user.pseudo }}
             </v-list-item-content>
           </v-tooltip>
@@ -90,54 +95,127 @@
         </p>
       </div>
       <v-divider></v-divider>
-      <v-card-actions>
-        <v-btn class="primary" v-if="userlike == true">
+      <v-card-actions class="d-flex flex-wrap">
+        <v-btn
+          class="primary ma-2"
+          v-if="post.userLiked.find(user => user.idUsers === user.userId)"
+          @click="like(post.idPost)"
+        >
           <v-icon class="mr-2">mdi-heart</v-icon> J'aime</v-btn
         >
-        <v-btn v-else> <v-icon class="mr-2">mdi-heart</v-icon> J'aime</v-btn>
-        <v-btn v-if="show != post.idPost" @click="show = post.idPost">
+        <v-btn class="ma-2" v-else @click="like(post.idPost)">
+          <v-icon class="mr-2">mdi-heart</v-icon> J'aime</v-btn
+        >
+        <v-btn
+          class="ma-2"
+          v-if="show != post.idPost"
+          @click="show = post.idPost"
+        >
           Commenter
           <v-icon>mdi-chevron-down</v-icon>
         </v-btn>
-        <v-btn v-if="show == post.idPost" @click="show = null">
+        <v-btn class="ma-2" v-if="show == post.idPost" @click="show = null">
           Commenter
           <v-icon>mdi-chevron-up</v-icon>
         </v-btn>
+        <v-btn
+          class="primary ma-2"
+          v-if="post.authorId.idUsers == user.userId || user.admin == true"
+          @click="updatePost(post)"
+          >Modifier</v-btn
+        >
+        <v-btn
+          class="warning ma-2"
+          v-if="post.authorId.idUsers == user.userId || user.admin == true"
+          @click="deletePost(post.idPost)"
+          >Supprimer</v-btn
+        >
       </v-card-actions>
       <v-divider></v-divider>
 
       <v-expand-transition>
         <div v-if="show == post.idPost">
-          <v-row justify="center" class=" mt-5">
-            <v-col cols="3" sm="1">
-              <v-avatar class="ml-5 mt-2" color="primary" size="50"
+          <v-row>
+            <v-col cols="3" sm="1" align-self="center">
+              <v-avatar color="primary" size="50"
                 ><img style="object-fit : cover" :src="user.avatar" alt=""
               /></v-avatar>
             </v-col>
-            <v-col cols="9" sm="11">
-              <v-text-field
+            <v-col cols="9" sm="11" align-self="center" class="mt-8">
+              <v-textarea
+                auto-grow
+                rows="1"
+                solo
                 v-model="message"
                 :append-outer-icon="'mdi-send'"
                 clear-icon="mdi-close-circle"
                 clearable
                 label="Message"
                 type="text"
-                @click:append-outer="sendMessage"
+                @click:append-outer="createReply(post.idPost)"
                 @click:clear="clearMessage"
-              ></v-text-field>
+              ></v-textarea>
             </v-col>
           </v-row>
           <v-row v-for="oneReply in post.reply" :key="oneReply.create">
-            <v-col cols="3" sm="1">
-              <v-avatar class="ml-5 mt-2" color="primary" size="50"
+            <v-col cols="3" sm="1" align-self="center">
+              <v-avatar color="primary" size="50"
                 ><img
                   style="object-fit : cover"
                   :src="oneReply.user.avatar"
                   alt=""
               /></v-avatar>
             </v-col>
-            <v-col cols="9" sm="11">
-              <p>{{ oneReply.content }}</p>
+            <v-col
+              v-if="editReply != oneReply.idReply"
+              cols="6"
+              sm="11"
+              align-self="center"
+              class="d-flex"
+            >
+              <p class="grey lighten-2 rounded mb-0" style="width:100%">
+                {{ oneReply.content }}
+              </p>
+              <v-btn
+                icon
+                color="primary"
+                v-if="
+                  oneReply.user.idUsers == user.userId || user.admin == true
+                "
+                @click="
+                  (editReply = oneReply.idReply) && (reply = oneReply.content)
+                "
+                ><v-icon>mdi-lead-pencil </v-icon></v-btn
+              >
+              <v-btn
+                icon
+                color="primary"
+                v-if="
+                  oneReply.user.idUsers == user.userId || user.admin == true
+                "
+                @click="deleteReply(oneReply.idReply)"
+                ><v-icon>mdi-close-circle </v-icon></v-btn
+              >
+            </v-col>
+            <v-col
+              v-else-if="editReply === oneReply.idReply"
+              cols="6"
+              sm="11"
+              align-self="center"
+              class="d-flex"
+            >
+              <v-textarea
+                auto-grow
+                rows="1"
+                solo
+                v-model="reply"
+                :append-outer-icon="'mdi-send + mdi-close-circle'"
+                clear-icon="mdi-close-circle"
+                clearable
+                type="text"
+                @click:append-outer="updateReply(oneReply.idReply)"
+                @click:clear="editReply = ''"
+              ></v-textarea>
             </v-col>
           </v-row>
         </div>
@@ -156,61 +234,81 @@ import { mapState } from "vuex";
 export default {
   layout: "home",
   data: () => ({
+    editReply: "",
     showLike: false,
     userlike: false,
     show: null,
     items: ["Sport", "Politique", "Travail"],
     value: ["Sport", "Politique", "Travail"],
     filter_by: undefined,
-    message: ""
+    message: "",
+    reply: ""
   }),
-
+  mounted: function() {
+    this.$store.dispatch("storePost/getAllUser");
+    this.$store.dispatch("storePost/getAllPost");
+    this.$store.dispatch("storeLike/getAllLike");
+    this.$store.dispatch("storeReply/getAllReply");
+  },
   computed: {
-    ...mapState('storeWall',{
-      postsFromStore:'post',
-      allUsersFromStore: "allUsers",
-      user: "userInfos",
-      likeFromStore: "allLike",
+    ...mapState("storePost", {
+      postsFromStore: "post",
+      allUsersFromStore: "allUsers"
+    }),
+    ...mapState("storeLike", {
+      likeFromStore: "allLike"
+    }),
+    ...mapState("storeReply", {
       replyFromStore: "allReply"
     }),
-    
+    ...mapState("storeConnectedUser", {
+      user: "userInfos"
+    }),
+
     publishToDisplay() {
-      return this.postsFromStore.map(post => {
-        let userLiked = this.likeFromStore.filter(
-          like => like.messageLike == post.idMessage
-        );
-        let reply = this.replyFromStore.filter(
-          reply => reply.replyMessage == post.idMessage
-        );
-        return {
-          idPost: post.idMessage,
-          authorId: this.allUsersFromStore.find(
-            user => user.idUsers == post.authorId
-          ),
-          title: post.title,
-          description: post.description,
-          category: post.categoryName,
-          image: post.image,
-          date: post.date,
-          userLiked: userLiked.map(like => {
-            return {
-              user: this.allUsersFromStore.find(
-                user => user.idUsers == like.userLike
-              )
-            };
-          }),
-          reply: reply.map(reply => {
-            return {
-              user: this.allUsersFromStore.find(
-                user => user.idUsers == reply.replyUser
-              ),
-              content: reply.replyContent,
-              create: reply.replyCreate,
-              update: reply.replyUpdate
-            };
-          })
-        };
-      });
+      if (
+        this.postsFromStore &&
+        this.allUsersFromStore &&
+        this.likeFromStore &&
+        this.replyFromStore
+      ) {
+        return this.postsFromStore.map(post => {
+          let userLiked = this.likeFromStore.filter(
+            like => like.messageLike == post.idMessage
+          );
+          let reply = this.replyFromStore.filter(
+            reply => reply.replyMessage == post.idMessage
+          );
+          return {
+            idPost: post.idMessage,
+            authorId: this.allUsersFromStore.find(
+              user => user.idUsers == post.authorId
+            ),
+            title: post.title,
+            description: post.description,
+            category: post.categoryName,
+            image: post.image,
+            date: post.date,
+            userLiked: userLiked.map(like => {
+              return {
+                user: this.allUsersFromStore.find(
+                  user => user.idUsers == like.userLike
+                )
+              };
+            }),
+            reply: reply.map(reply => {
+              return {
+                user: this.allUsersFromStore.find(
+                  user => user.idUsers == reply.replyUser
+                ),
+                content: reply.replyContent,
+                create: reply.replyCreate,
+                idReply: reply.idReply
+              };
+            })
+          };
+        });
+      }
     }
   },
 
@@ -220,12 +318,42 @@ export default {
       moment.locale("fr");
       return moment(value).calendar();
     },
-    sendMessage() {
-      console.log(this.message);
-      this.clearMessage();
-    },
+    
     clearMessage() {
       this.message = "";
+    },
+    like(idMessage) {
+      const requestLike = {
+        idMessage: idMessage,
+        userId: this.user.userId
+      };
+      this.$store.dispatch("storeLike/postLike", requestLike);
+    },
+    deletePost(idMessage) {
+      if (confirm("Êtes vous sur de vouloir supprimer cette publication ? ")) {
+        this.$store.dispatch("storePost/deletePost", idMessage);
+      }
+    },
+    updatePost(post) {
+      this.$store.commit("storePost/storePostToUpdate", post);
+      this.$router.push("/post");
+    },
+    deleteReply(idReply) {
+      this.$store.dispatch("storeReply/deleteReply",idReply);
+    },
+    createReply(idPost) {
+      const reply = {
+        userId : this.user.userId,
+        content : this.message,
+        idMessage : idPost
+      };
+      this.$store.dispatch("storeReply/createReply", reply);
+      this.clearMessage();
+    },
+    updateReply(idReply) {
+      const content = this.reply;
+      this.$store.dispatch("storeReply/updateReply",{idReply, content});
+      this.editReply = '';
     }
   }
 };

@@ -24,10 +24,23 @@
     <v-navigation-drawer v-model="drawer" app>
       <v-sheet color="background" class="pa-5 d-flex flex-column align-center">
         <v-avatar class="mb-5" color="primary" size="120"
-          ><img style="object-fit : cover" :src="user.avatar" alt=""
-        /></v-avatar>
-        <div class="mb-5">{{ user.pseudo }}</div>
-        <div class="font-italic">"{{ user.description }}"</div>
+          ><img
+            v-if="connected===true"
+            style="object-fit : cover"
+            :src="userInfos.avatar"
+            :alt="userInfos.pseudo"
+        />
+        <img
+          v-else
+            style="object-fit : cover"
+            src="../assets/icon.png"
+            alt="Avatar Groupomania"
+        />
+        </v-avatar>
+        <div v-if="connected===true" class="mb-5">{{ userInfos.pseudo }}</div>
+        <div v-else class="mb-5">Votre future pseudo ici !</div>
+        <div v-if="connected===true" class="font-italic">"{{ userInfos.description }}"</div>
+        <div v-else class="font-italic">"Votre future description !"</div>
       </v-sheet>
       <v-divider></v-divider>
 
@@ -37,7 +50,7 @@
             <v-icon>mdi-home</v-icon>
             <v-list-item-title class="ml-15"> Accueil</v-list-item-title>
           </v-list-item>
-          <v-list-item to="/wall" nuxt class="d-flex">
+          <v-list-item v-if="connected==true" to="/wall" nuxt class="d-flex">
             <v-icon>mdi-wall</v-icon>
             <v-list-item-title class="ml-15"> Le Mur</v-list-item-title>
           </v-list-item>
@@ -53,8 +66,11 @@
       </v-list>
       <template v-slot:append>
         <div class="pa-2 pb-5">
-          <v-btn block class="primary" @click="logout">
+          <v-btn block v-if="connected === true" class="primary" @click="logout">
             Se déconnecter
+          </v-btn>
+          <v-btn  block v-else class="primary" to="/" nuxt>
+            Se connecter
           </v-btn>
         </div>
       </template>
@@ -72,32 +88,34 @@
 import { mapState } from "vuex";
 export default {
   data: () => ({
-    drawer: true
+    drawer: true,
+    connected: false
   }),
   mounted: function() {
-    if (
-      this.$store.state.user.userId == -1 ||
-      this.$store.state.status == "error_login"
-    ) {
+    if (this.user.userId === -1) {
       localStorage.removeItem("user");
-      this.$router.push("/account");
-      return;
+      this.connected = false;
+    } else if (this.user.userId != -1) {
+      this.connected = true;
+      this.$store.dispatch(
+        "storeConnectedUser/getUserInfo",
+        this.$store.state.user
+      );
     }
-    this.$store.dispatch("getUserInfo", this.$store.state.user);
-    this.$store.dispatch("storeWall/getAllUser");
-    this.$store.dispatch("storeWall/getAllPost");
-    this.$store.dispatch("storeWall/getAllLike");
-    this.$store.dispatch("storeWall/getAllReply");
   },
   computed: {
     ...mapState({
-      user: "userInfos"
+      user: "user",
+      status: "status"
+    }),
+    ...mapState("storeConnectedUser", {
+      userInfos: "userInfos"
     }),
   },
   methods: {
     logout: function() {
-      this.$store.commit("logout");
-      this.$router.push("/account");
+      this.$store.dispatch("logout");
+      this.$router.push("/");
     }
   }
 };

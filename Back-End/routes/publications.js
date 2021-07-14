@@ -5,10 +5,9 @@ const publishCtrl = require('../controller/publications');
 const auth = require('../middleware/auth');
 const { route } = require('./user');
 
-router.get('/', publishCtrl.getAll);
-router.get('/getReply',publishCtrl.getReply);
-router.post('/create',publishCtrl.create);
-router.get('/getLike',publishCtrl.getLike);
-router.post('/like',publishCtrl.like);
+router.get('/',auth, publishCtrl.getAll);
+router.post('/create',auth,publishCtrl.create);
+router.delete('/deletePost/:id',auth,publishCtrl.deletePost);
+router.put('/updatePost/:id',auth,publishCtrl.updatePost);
 
 module.exports = router;

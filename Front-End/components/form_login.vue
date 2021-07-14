@@ -4,7 +4,6 @@
       Mettez à jour vos informations !</v-card-title
     >
     <v-card-title v-if="mode == 'create'"> Créez votre compte !</v-card-title>
-    <v-card-title v-if="mode == 'login'"> Connectez-vous !</v-card-title>
     <v-card-subtitle v-if="mode == 'create' || mode == 'update'"
       >Merci de renseigner tout les champs obligatoire</v-card-subtitle
     >
@@ -69,7 +68,7 @@
       v-if="mode == 'create' || mode == 'update'"
     ></v-text-field>
     <v-row>
-      <v-btn class="mr-4 mt-10 primary" v-if="mode == 'login'" @click="login"
+      <v-btn class="mr-4 mt-10 primary" v-if="mode == 'login'"
         >Se connecter</v-btn
       >
       <v-btn
@@ -90,10 +89,7 @@
         @click="switchToLogin"
         >Déjà un compte ?</v-btn
       >
-      <v-btn
-        class="mr-4 mt-10 primary"
-        v-else-if="mode == 'update'"
-        @click="login"
+      <v-btn class="mr-4 mt-10 primary" v-else-if="mode == 'update'"
         >Modifier</v-btn
       >
       <v-btn
@@ -102,19 +98,36 @@
         @click="goToHome"
         >Accueil</v-btn
       >
-      <v-btn
-        class="mr-4 mt-10 warning"
-        v-if="mode == 'update'"
-        @click="confirmDelete"
-        >Supprimer le compte</v-btn
-      >
-      <v-alert
-        class="mt-10"
-        type="warning"
-        v-if="mode == 'login' && status == 'error_login'"
-      >
-        Adresse mail et/ou mot de passe invalide !
-      </v-alert>
+      <v-dialog v-model="dialog" persistent max-width="320">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            class="mr-4 mt-10 warning"
+            v-if="mode == 'update'"
+            v-bind="attrs"
+            v-on="on"
+            >Supprimer le compte</v-btn
+          >
+        </template>
+        <v-card>
+          <v-card-title class="text-h5">
+            Etes vous sûr de vouloir supprimer votre compte ?
+          </v-card-title>
+          <v-card-text
+            >Supprimer votre compte signifie perdre toutes vos données,
+            messages, like ... posté. Ces données ne peuvent pas êtres
+            récupéré.</v-card-text
+          >
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary darken-1" text @click="dialog = false">
+              Annuler
+            </v-btn>
+            <v-btn color="warning" @click="confirmDelete()">
+              Supprimer
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <v-alert class="mt-10" type="warning" v-if="status == 'error_create'">
         Adresse mail et/ou pseudo déjà utilisé !</v-alert
       >
@@ -150,6 +163,7 @@ export default {
   },
 
   data: () => ({
+    dialog: false,
     error: "",
     rules: [
       value =>
@@ -157,7 +171,7 @@ export default {
         value.size < 2000000 ||
         "Avatar size should be less than 2 MB!"
     ],
-    mode: "login",
+    mode: "create",
     pseudo: "",
     email: "",
     description: "",
@@ -202,12 +216,11 @@ export default {
 
   mounted: function() {
     if (this.$store.state.user.userId != -1) {
-      //this.layout= 'home';
       this.mode = "update";
-      this.email = this.$store.state.userInfos.email;
-      this.pseudo = this.$store.state.userInfos.pseudo;
-      this.description = this.$store.state.userInfos.description;
-      this.file = this.$store.state.userInfos.avatar;
+      this.email = this.$store.state.storeConnectedUser.userInfos.email;
+      this.pseudo = this.$store.state.storeConnectedUser.userInfos.pseudo;
+      this.description = this.$store.state.storeConnectedUser.userInfos.description;
+      this.file = this.$store.state.storeConnectedUser.userInfos.avatar;
       return;
     }
   },
@@ -235,28 +248,22 @@ export default {
       this.mode = "create";
     },
     switchToLogin: function() {
-      this.mode = "login";
+      this.$router.push("/");
     },
 
     confirmDelete: function() {
-      const resultat = window.confirm(
-        "Etes vous sûr de vouloir supprimer votre compte ? Il ne sera pas possible de le récupérer"
-      );
-      if (resultat) {
-        const self = this;
-        this.$store
-          .dispatch("deleteUser", this.$store.state.user.userId)
-          .then(function(response) {
-            localStorage.removeItem("user");
-            window.location.reload();
-            console.log(response);
-          }),
-          function(error) {
-            console.log(error);
-          };
-      } else {
-        console.log("compte pas supprimé");
-      }
+      this.$store
+        .dispatch(
+          "storeConnectedUser/deleteUser",
+          this.$store.state.user.userId
+        )
+        .then(response => {
+          this.$router.push("/");
+          console.log(response);
+        }),
+        function(error) {
+          console.log(error);
+        };
     },
 
     createAccount: function() {
@@ -269,41 +276,14 @@ export default {
       ) {
         return (this.error = "form_not_complete");
       } else {
-        this.$store
-          .dispatch("createAccount", {
-            email: this.email,
-            pseudo: this.pseudo,
-            password: this.password,
-            description: this.description,
-            image: this.file
-          })
-          .then(response => {
-            this.login();
-            console.log(response);
-          }),
-          function(error) {
-            console.log(error);
-          };
-      }
-    },
-
-    login: function() {
-      this.$v.$touch();
-      if (this.$v.email.$invalid && this.$v.password.$invalid) {
-        return (this.error = "form_not_complete");
-      } else {
-        this.$store
-          .dispatch("login", {
-            email: this.email,
-            password: this.password
-          })
-          .then(response => {
-            this.$router.push("/accueil");
-            console.log(response);
-          }),
-          function(error) {
-            console.log(error);
-          };
+        this.$store.dispatch("storeConnectedUser/createAccount", {
+          email: this.email,
+          pseudo: this.pseudo,
+          password: this.password,
+          description: this.description,
+          image: this.file
+        });
+        this.$router.push("/");
       }
     }
   }

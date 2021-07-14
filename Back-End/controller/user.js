@@ -28,7 +28,7 @@ exports.signup = (req, res, next) => {
 
         myDb.query("INSERT INTO users SET ?", users, function (err, result) {
           if (err) {
-            res.status(401).json({ message: err });
+            res.status(400).json({ message: err });
           } else {
             res.status(201).json({ message: "Utilisateur crée !" });
           }
@@ -64,7 +64,7 @@ exports.login = (req, res, next) => {
           .catch((error) => res.status(500).json({ error }));
       }
       else{
-        return res.status(401).json({message:"Utilisateur n'existe pas ! "})
+        return res.status(400).json({message:"Utilisateur n'existe pas ! "})
       }
     });
   });
@@ -89,6 +89,9 @@ exports.info = (req, res, next) => {
       }
     });
   });
+};
+exports.update = (req,res)=>{
+
 };
 
 exports.delete = (req,res,next) =>{

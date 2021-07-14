@@ -11,6 +11,7 @@
 <script>
 import form_login from '~/components/form_login.vue'
 export default {
+  layout:"home",
   components: { form_login },
 
 }

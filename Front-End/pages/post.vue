@@ -99,8 +99,11 @@
       <p>Votre titre : {{ this.title }}</p>
       <p>Votre description : {{ this.description }}</p>
       <p>Votre catégorie : {{ this.categoryName }}</p>
-      <v-btn color="primary" @click="createMessage">
-        Continuer
+      <v-btn color="primary" v-if="this.mode === 'create'" @click="createMessage">
+        Créer la publication
+      </v-btn>
+      <v-btn color="primary" v-else-if="this.mode === 'update'" @click="updateMessage(postToUpdate.idPost)">
+        Mettre la publication à jour
       </v-btn>
       <v-btn text @click="e6 = 1">
         Revenir en arrière
@@ -110,14 +113,11 @@
 </template>
 
 <script>
-const axios = require("axios");
-const server = axios.create({
-  baseURL: "http://localhost:4000/api/"
-});
-
+import { mapState } from "vuex";
 export default {
   layout: "home",
   data: () => ({
+    mode :'create',
     rules: [
       value =>
         !value ||
@@ -133,9 +133,22 @@ export default {
       { name: "Sport", id: 1 },
       { name: "politique", id: 2 }
     ],
-    category: "",
-    categoryName: ""
+    category: null,
+    categoryName: null
   }),
+  computed: {
+    ...mapState("storePost", {
+      postToUpdate: "postToUpdate"
+    })
+  },
+  mounted: function() {
+    if (this.postToUpdate) {
+      this.file = this.postToUpdate.image,
+      this.title = this.postToUpdate.title,
+      this.description = this.postToUpdate.description
+      this.mode='update';
+    }
+  },
   methods: {
     previewImage: function() {
       if (this.upload == null) {
@@ -156,21 +169,40 @@ export default {
       this.categoryName = categoryName.name;
       this.e6 = 5;
     },
-    createMessage: function(){
-        const message = {
-            title: this.title,
-            description: this.description,
-            category: this.category,
-            userId: this.$store.state.userInfos.userId,
-            image: this.file
-        };
-        server.post('/publish/create',message)
-        .then(function(response){
-            console.log(response)
+    createMessage: function() {
+      const message = {
+        title: this.title,
+        description: this.description,
+        category: this.category,
+        userId: this.$store.state.storeConnectedUser.userInfos.userId,
+        image: this.file
+      };
+      this.$api
+        .post("/publish/create", message)
+        .then(response => {
+          console.log(response);
+          this.$router.push("/wall");
         })
-        .catch(function(error){
-            console.log(error)
+        .catch(function(error) {
+          console.log(error);
         });
+    },
+    updateMessage:function(idMessage){
+      const message = {
+        title: this.title,
+        description: this.description,
+        category: this.category,
+        userId: this.$store.state.storeConnectedUser.userInfos.userId,
+        image: this.file,
+      };
+      this.$api.put("/publish/updatePost/"+idMessage,message)
+      .then(response =>{
+        console.log(response.data.message);
+        this.$router.push('/wall');
+      })
+      .catch(error=>{
+        console.log(error)
+      });
     }
   }
 };

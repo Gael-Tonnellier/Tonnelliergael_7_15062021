@@ -33,7 +33,7 @@
             </v-col>
           </v-col>
           <v-col
-            class="ma-5 d-flex justify-center background rounded-lg elevation-1"
+            v-if="connected===true" class="ma-5 d-flex justify-center background rounded-lg elevation-1"
           >
             <v-col class="d-flex flex-column justify-center">
               <p class="text-center">
@@ -51,7 +51,13 @@
 
 <script>
 export default {
-  layout: "home"
+  layout: "home",
+  data: ()=>({
+      connected: false,
+  }),
+  mounted: function(){
+    this.$store.state.user.userId === -1 ? this.connected = false : this.connected = true
+  }
 };
 </script>
 

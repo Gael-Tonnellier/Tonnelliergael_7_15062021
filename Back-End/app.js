@@ -5,6 +5,8 @@ const mysql= require('mysql2');
 //const path =require('path');
 const publicationsRoutes = require('./routes/publications');
 const userRoutes =require('./routes/user');
+const replyRoutes =require('./routes/reply');
+const likeRoutes =require('./routes/like');
 
 const app =express();
 
@@ -29,5 +31,8 @@ app.use(express.json({limit:'50mb'}));
 
 app.use('/api/publish',publicationsRoutes);
 app.use('/api/user',userRoutes);
+app.use('/api/reply',replyRoutes);
+app.use('/api/like',likeRoutes);
+
 
 module.exports = app;
