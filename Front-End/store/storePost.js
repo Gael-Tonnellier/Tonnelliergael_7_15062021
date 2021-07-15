@@ -1,4 +1,5 @@
 
+
 export const state = () => ({
   post: "",
   allUsers: "",
@@ -6,8 +7,13 @@ export const state = () => ({
 });
 
 export const mutations = {
-  getAllPost: function(state, allPost) {
-    state.post = allPost;
+  getLastPost: function(state, lastPost) {
+    state.post = lastPost;
+  },
+  getOlder:function(state,older){
+    older.map(post=>{
+      state.post.push(post)
+    })
   },
   getAllUser: function(state, allUser) {
     state.allUsers = allUser;
@@ -21,10 +27,15 @@ export const mutations = {
   }
 };
 export const actions = {
-  async getAllPost({ commit }) {
-    const request = await this.$api.get("/publish/");
+  async getLastPost({commit}){
+    const request = await this.$api.get("/publish/last");
     console.log(request.data.message);
-    commit("getAllPost", request.data.response);
+    commit("getLastPost", request.data.response);
+  },
+  async getAllPost({ commit }, postCount) {
+    const request = await this.$api.get("/publish/getOlder"+postCount);
+    console.log(request.data.message);
+    commit("getOlder", request.data.response);
   },
   async getAllUser({ commit }) {
     const request = await this.$api.get("/user/");

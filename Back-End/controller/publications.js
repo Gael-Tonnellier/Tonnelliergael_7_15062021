@@ -7,12 +7,41 @@ const myDb = mysql.createConnection({
   database: "groupomagif",
 });
 
-exports.getAll = (req, res, next) => {
+exports.getLast = (req,res,next) =>{
   myDb.connect(function (err) {
     if (err) throw err;
     console.log("Connecté à la DB ");
     let request =
-      "SELECT msg.*, users.pseudo, users.avatar, category.name FROM message AS msg  JOIN users ON msg.idUsers = users.idUsers  JOIN category ON msg.idCategory = category.idCategory ";
+      "SELECT msg.*, users.pseudo, users.avatar, category.name FROM message AS msg JOIN users ON msg.idUsers = users.idUsers  JOIN category ON msg.idCategory = category.idCategory  ORDER BY Created DESC LIMIT 1";
+    myDb.query(request, function (err, result) {
+      if (err) throw err;
+      let response = result.map((message) => {
+        const post = {
+          authorId: message.idUsers,
+          title: message.title,
+          description: message.description,
+          image: message.image,
+          idMessage: message.idMessage,
+          idCategory: message.idCategory,
+          categoryName: message.name,
+          date: message.created,
+        };
+        return post;
+      });
+
+      res
+        .status(200)
+        .json({ response, message: "Recupération des messages !" });
+    });
+  });
+};
+
+exports.getOlder = (req, res, next) => {
+  myDb.connect(function (err) {
+    if (err) throw err;
+    console.log("Connecté à la DB ");
+    let request =
+      `SELECT msg.*, users.pseudo, users.avatar, category.name FROM message AS msg  JOIN users ON msg.idUsers = users.idUsers  JOIN category ON msg.idCategory = category.idCategory ORDER BY Created DESC LIMIT ${req.params.id},1 `;
     myDb.query(request, function (err, result) {
       if (err) throw err;
       let response = result.map((message) => {

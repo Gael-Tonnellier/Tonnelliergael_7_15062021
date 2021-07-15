@@ -224,6 +224,7 @@
         </div>
       </v-expand-transition>
     </v-card>
+    <v-btn block elevation='5' class="mt-5" color='primary' @click="showMorePost">Voir plus </v-btn>
   </v-container>
 </template>
 
@@ -246,7 +247,7 @@ export default {
   }),
   mounted: function() {
     this.$store.dispatch("storePost/getAllUser");
-    this.$store.dispatch("storePost/getAllPost");
+    this.$store.dispatch("storePost/getLastPost");
     this.$store.dispatch("storeLike/getAllLike");
     this.$store.dispatch("storeReply/getAllReply");
   },
@@ -354,6 +355,10 @@ export default {
       const content = this.reply;
       this.$store.dispatch("storeReply/updateReply",{idReply, content});
       this.editReply = '';
+    },
+    showMorePost(){
+      const postCount = this.postsFromStore.length
+      this.$store.dispatch("storePost/getAllPost", postCount)
     }
   }
 };
