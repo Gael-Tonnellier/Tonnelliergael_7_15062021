@@ -85,6 +85,7 @@ exports.info = (req, res, next) => {
           created: result[0].Created,
           description: result[0].description,
           avatar: result[0].avatar,
+          admin: result[0].admin
         });
       }
     });

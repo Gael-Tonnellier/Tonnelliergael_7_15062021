@@ -12,7 +12,7 @@ exports.getLast = (req,res,next) =>{
     if (err) throw err;
     console.log("Connecté à la DB ");
     let request =
-      "SELECT msg.*, users.pseudo, users.avatar, category.name FROM message AS msg JOIN users ON msg.idUsers = users.idUsers  JOIN category ON msg.idCategory = category.idCategory  ORDER BY Created DESC LIMIT 1";
+      "SELECT msg.*, users.pseudo, users.avatar, category.name FROM message AS msg JOIN users ON msg.idUsers = users.idUsers  JOIN category ON msg.idCategory = category.idCategory  ORDER BY Created DESC LIMIT 10";
     myDb.query(request, function (err, result) {
       if (err) throw err;
       let response = result.map((message) => {
@@ -41,7 +41,7 @@ exports.getOlder = (req, res, next) => {
     if (err) throw err;
     console.log("Connecté à la DB ");
     let request =
-      `SELECT msg.*, users.pseudo, users.avatar, category.name FROM message AS msg  JOIN users ON msg.idUsers = users.idUsers  JOIN category ON msg.idCategory = category.idCategory ORDER BY Created DESC LIMIT ${req.params.id},1 `;
+      `SELECT msg.*, users.pseudo, users.avatar, category.name FROM message AS msg  JOIN users ON msg.idUsers = users.idUsers  JOIN category ON msg.idCategory = category.idCategory ORDER BY Created DESC LIMIT ${req.params.id},10 `;
     myDb.query(request, function (err, result) {
       if (err) throw err;
       let response = result.map((message) => {
@@ -60,7 +60,7 @@ exports.getOlder = (req, res, next) => {
 
       res
         .status(200)
-        .json({ response, message: "Recupération des messages !" });
+        .json({ response, message: "Recupération des messages plus anciens !" });
     });
   });
 };
