@@ -12,3 +12,4 @@ router.delete('/deletePost/:id',auth,publishCtrl.deletePost);
 router.put('/updatePost/:id',auth,publishCtrl.updatePost);
 
 module.exports = router;
+ 

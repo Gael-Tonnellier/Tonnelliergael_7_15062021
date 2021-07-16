@@ -98,7 +98,7 @@
       <v-card-actions class="d-flex flex-wrap">
         <v-btn
           class="primary ma-2"
-          v-if="post.userLiked.find(user => user.idUsers === user.userId)"
+          v-if="post.userLiked.find(userLike => userLike.user.idUsers === user.userId)"
           @click="like(post.idPost)"
         >
           <v-icon class="mr-2">mdi-heart</v-icon> J'aime</v-btn

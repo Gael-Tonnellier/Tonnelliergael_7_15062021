@@ -12,10 +12,10 @@ const app =express();
 
 // METHODE DE CONNECTION A LA DB
 const myDatabase = mysql.createConnection({
-    host: "databases.000webhost.com",
-    user: "id17258250_gael",
-    password: "SC?Kv(42!H_Vw*h&",
-    database:"id17258250_mysqldb"
+    host: "localhost",
+    user: "root",
+    password: "Gael83600",
+    database:"groupomagif"
 });
 
 //HEADER POUR PERMETTRE ECHANGE ENTRE SERVEURS
