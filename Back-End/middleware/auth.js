@@ -5,7 +5,7 @@ module.exports=(req,res,next)=>{
     try{
         // RECUPERATION DU TOKEN SANS LE BEARER
         const token = req.headers.authorization;
-        console.log('test',token);
+        //console.log('test',token);
         // VERIFICATION DU TOKEN CORRESPONDANT AVEC CELUI ATTRIBUE A L USER
         const decodedToken = jwt.verify(token, 'letoken');
         const userId = decodedToken.userId;

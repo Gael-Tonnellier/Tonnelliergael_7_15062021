@@ -35,3 +35,4 @@ export const actions = {
     commit("storeConnectedUser/deleteUserInfos")
   }
 };
+

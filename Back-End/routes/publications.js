@@ -3,6 +3,7 @@ const router = express.Router();
 
 const publishCtrl = require('../controller/publications');
 const auth = require('../middleware/auth');
+//const connect = require('../middleware/connect');
 const { route } = require('./user');
 
 router.get('/getOlder:id',auth,publishCtrl.getOlder);

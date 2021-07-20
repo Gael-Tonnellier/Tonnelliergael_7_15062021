@@ -1,4 +1,5 @@
-export default function({ $axios,redirect },inject) {
+
+export default function({ store,redirect, app:{$axios }},inject) {
   // Create a custom axios instance
   const api = $axios;
   api.onRequest(config=>{
@@ -11,7 +12,7 @@ export default function({ $axios,redirect },inject) {
   api.onError(error=>{
     const code = parseInt(error.response && error.response.status)
     if(code===401){
-      localStorage.removeItem("user");
+      store.dispatch('logout');
       redirect('/')
       console.log('Vous n\'êtes pas authentifié, merci de vous connectez')
     }

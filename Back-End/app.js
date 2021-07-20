@@ -1,22 +1,11 @@
 require('dotenv').config()
 const express = require('express');
-const mysql= require('mysql2');
-
-//const path =require('path');
 const publicationsRoutes = require('./routes/publications');
 const userRoutes =require('./routes/user');
 const replyRoutes =require('./routes/reply');
 const likeRoutes =require('./routes/like');
 
 const app =express();
-
-// METHODE DE CONNECTION A LA DB
-const myDatabase = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "Gael83600",
-    database:"groupomagif"
-});
 
 //HEADER POUR PERMETTRE ECHANGE ENTRE SERVEURS
 app.use((req, res, next) => {

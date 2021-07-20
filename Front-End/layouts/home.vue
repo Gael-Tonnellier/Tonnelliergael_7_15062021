@@ -23,9 +23,9 @@
 
     <v-navigation-drawer v-model="drawer" app>
       <v-sheet color="background" class="pa-5 d-flex flex-column align-center">
-        <v-avatar class="mb-5" color="primary" size="120"
+        <v-avatar class="mb-5" size="120"
           ><img
-            v-if="connected===true"
+            v-if="userInfos.avatar"
             style="object-fit : cover"
             :src="userInfos.avatar"
             :alt="userInfos.pseudo"
@@ -33,20 +33,20 @@
         <img
           v-else
             style="object-fit : cover"
-            src="../assets/icon.png"
+            src="../assets/avatar.png"
             alt="Avatar Groupomania"
         />
         </v-avatar>
         <div v-if="connected===true" class="mb-5">{{ userInfos.pseudo }}</div>
         <div v-else class="mb-5">Votre future pseudo ici !</div>
-        <div v-if="connected===true" class="font-italic">"{{ userInfos.description }}"</div>
+        <div v-if="userInfos.description" class="font-italic">"{{ userInfos.description }}"</div>
         <div v-else class="font-italic">"Votre future description !"</div>
       </v-sheet>
       <v-divider></v-divider>
 
       <v-list nav>
         <v-list-item-group color="primary">
-          <v-list-item to="/accueil" nuxt class="d-flex">
+          <v-list-item to="/landing" nuxt class="d-flex">
             <v-icon>mdi-home</v-icon>
             <v-list-item-title class="ml-15"> Accueil</v-list-item-title>
           </v-list-item>
@@ -88,7 +88,7 @@
 import { mapState } from "vuex";
 export default {
   data: () => ({
-    drawer: true,
+    drawer: false,
     connected: false
   }),
   mounted: function() {

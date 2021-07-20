@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <img class="ma-auto mt-15" src="../assets/groupomania.png">
+    <img class="ma-auto" src="../assets/groupomania.png">
     <v-main> <Nuxt/> </v-main>
   </v-app>
 </template>
@@ -17,7 +17,7 @@ export default {
   background-blend-mode:color-burn; 
 }
 img{
-  width: 70%;
+  width: 60%;
 }
 </style>
 

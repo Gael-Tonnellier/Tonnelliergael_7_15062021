@@ -34,8 +34,8 @@
       v-if="mode == 'create' || mode == 'update'"
       class="ma-auto align-center"
     >
-      <v-avatar class="mr-5" size="100" color="primary">
-        <img src="../assets/icon.png" v-if="file == null" alt="Avatar" />
+      <v-avatar class="mr-5" size="100">
+        <img src="../assets/avatar.png" v-if="file == null" alt="Avatar" />
         <img v-else :src="file" />
       </v-avatar>
       <v-file-input
@@ -174,7 +174,7 @@ export default {
     mode: "create",
     pseudo: "",
     email: "",
-    description: "",
+    description: null,
     file: null,
     upload: null,
     password: "",
@@ -227,7 +227,7 @@ export default {
 
   methods: {
     goToHome: function() {
-      this.$router.push("/accueil");
+      this.$router.push("/landing");
     },
 
     previewImage: function() {
@@ -269,9 +269,9 @@ export default {
     createAccount: function() {
       this.$v.$touch();
       if (
-        this.$v.email.$invalid &&
-        this.$v.password.$invalid &&
-        this.$v.pseud.$invalid &&
+        this.$v.email.$invalid ||
+        this.$v.password.$invalid ||
+        this.$v.pseudo.$invalid ||
         this.$v.passwordCheck.$invalid
       ) {
         return (this.error = "form_not_complete");
@@ -283,7 +283,6 @@ export default {
           description: this.description,
           image: this.file
         });
-        this.$router.push("/");
       }
     }
   }

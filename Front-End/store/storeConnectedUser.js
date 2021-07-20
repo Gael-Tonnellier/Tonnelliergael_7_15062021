@@ -31,8 +31,9 @@ export const actions = {
       const request = await this.$api.post("/user/signup", userInfos);
       console.log(request.data.message);
       dispatch("setStatus", "created",{root:true});
+      this.$router.push("/")
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
       dispatch("setStatus", "error_create",{root:true});
     }
   },
@@ -42,7 +43,7 @@ export const actions = {
       const request = await this.$api.post("/user/login", userInfos);
       dispatch("setStatus", "connected",{root:true});
       commit("logUser", request.data,{root:true});
-      this.$router.push("/accueil")
+      this.$router.push("/landing")
     } catch (error) {
       console.log("Mot de passe incorrect ||",error);
       dispatch("setStatus", "error_login",{root:true});
