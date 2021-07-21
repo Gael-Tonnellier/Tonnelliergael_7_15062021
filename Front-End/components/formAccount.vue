@@ -57,6 +57,7 @@
       required
       @input="$v.password.$touch()"
       @blur="$v.password.$touch()"
+      v-if="mode == 'create'"
     ></v-text-field>
     <v-text-field
       v-model="passwordCheck"
@@ -65,33 +66,25 @@
       type="password"
       @input="$v.passwordCheck.$touch()"
       @blur="$v.passwordCheck.$touch()"
-      v-if="mode == 'create' || mode == 'update'"
+      v-if="mode == 'create'"
     ></v-text-field>
     <v-row>
-      <v-btn class="mr-4 mt-10 primary" v-if="mode == 'login'"
-        >Se connecter</v-btn
-      >
+      
       <v-btn
         class="mr-4 mt-10 primary"
-        v-else-if="mode == 'create'"
+        v-if="mode == 'create'"
         @click="createAccount"
         >S'inscrire</v-btn
       >
       <v-btn
         class="mr-4 mt-10 secondary"
-        v-if="mode == 'login'"
-        @click="switchToCreate"
-        >Créer un compte</v-btn
-      >
-      <v-btn
-        class="mr-4 mt-10 secondary"
-        v-else-if="mode == 'create'"
+        v-if="mode == 'create'"
         @click="switchToLogin"
         >Déjà un compte ?</v-btn
       >
-      <v-btn class="mr-4 mt-10 primary" v-else-if="mode == 'update'"
-        >Modifier</v-btn
-      >
+      <v-btn class="mr-4 mt-10 primary" v-else-if="mode == 'update'" @click="updateAccount">
+        Modifier
+        </v-btn>
       <v-btn
         class="mr-4 mt-10 secondary"
         v-if="mode == 'update'"
@@ -133,6 +126,9 @@
       >
       <v-alert class="mt-10" type="warning" v-if="error == 'form_not_complete'">
         Merci de compléter le formulaire</v-alert
+      >
+      <v-alert class="mt-10" type="success" v-if="status == 'data_update'">
+        Modifications mis à jour !</v-alert
       >
     </v-row>
   </form>
@@ -244,9 +240,6 @@ export default {
         };
       }
     },
-    switchToCreate: function() {
-      this.mode = "create";
-    },
     switchToLogin: function() {
       this.$router.push("/");
     },
@@ -282,6 +275,24 @@ export default {
           password: this.password,
           description: this.description,
           image: this.file
+        });
+      }
+    },
+
+    updateAccount:function(){
+      this.$v.$touch();
+      if (
+        this.$v.email.$invalid ||
+        this.$v.pseudo.$invalid
+      ) {
+        return (this.error = "form_not_complete");
+      } else {
+        this.$store.dispatch("storeConnectedUser/updateUser", {
+          email: this.email,
+          pseudo: this.pseudo,
+          description: this.description,
+          image: this.file,
+          userId : this.$store.state.storeConnectedUser.userInfos.userId
         });
       }
     }

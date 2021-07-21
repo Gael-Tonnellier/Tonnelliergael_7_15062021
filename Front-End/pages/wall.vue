@@ -14,7 +14,7 @@
           ></v-select>
           <v-btn-toggle v-model="filter_by" mandatory class="flex-wrap ">
             <v-btn class="ma-2 ">
-              <span class="mr-5">Les plus populaires</span>
+              <span class="mr-5"> Populaires</span>
               <v-icon color="primary">mdi-fire</v-icon>
             </v-btn>
             <v-btn class="ma-2">
@@ -102,8 +102,8 @@
                   </p>
                 </template>
                 <v-card>
-                  <v-card-title
-                    style="word-break:break-word">Utilisateurs qui aiment cette publication</v-card-title
+                  <v-card-title class="primary white--text" style="word-break:break-word"
+                    >Utilisateurs qui aiment cette publication</v-card-title
                   >
                   <v-divider></v-divider>
                   <v-list-item
@@ -242,6 +242,14 @@
               <div>
                 <h3>{{ oneReply.user.pseudo }}</h3>
                 <p
+                  v-if="oneReply.user.idUsers === user.userId"
+                  class="grey lighten-2 rounded mb-0 pa-3 flex-wrap"
+                  style="width:100%;word-break:break-word;border:dashed #93441A!important"
+                >
+                  {{ oneReply.content }}
+                </p>
+                <p
+                  v-else
                   class="grey lighten-2 rounded mb-0 pa-3 flex-wrap"
                   style="width:100%;word-break:break-word"
                 >
@@ -312,6 +320,14 @@
               <div>
                 <h3>{{ post.reply[0].user.pseudo }}</h3>
                 <p
+                  v-if="post.reply[0].user.idUsers === user.userId"
+                  class="grey lighten-2 rounded mb-0 pa-3 flex-wrap"
+                  style="width:100%;word-break:break-word;border:dashed #93441A!important"
+                >
+                  {{ post.reply[0].content }}
+                </p>
+                <p
+                  v-else
                   class="grey lighten-2 rounded mb-0 pa-3 flex-wrap"
                   style="width:100%;word-break:break-word"
                 >
@@ -327,33 +343,27 @@
         </div>
       </v-expand-transition>
     </v-card>
-    <v-tooltip top>
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn
-          v-if="postsFromStore.length % 10 === 0"
-          block
-          elevation="5"
-          class="mt-5"
-          color="primary"
-          @click="showMorePost"
-          >Voir plus
-        </v-btn>
-        <div v-bind="attrs" v-on="on">
-          <v-btn
-            v-if="postsFromStore.length % 10 != 0"
-            block
-            disabled
-            elevation="5"
-            class="mt-5"
-            color="primary"
-            >Voir plus
-          </v-btn>
-        </div>
-      </template>
-      <v-list-item-content
-        >Pas de nouvelle publication à afficher !
-      </v-list-item-content>
-    </v-tooltip>
+
+    <v-btn
+      v-if="postsFromStore.length % 10 === 0"
+      block
+      elevation="5"
+      class="mt-5"
+      color="primary"
+      @click="showMorePost"
+      >Voir plus
+    </v-btn>
+
+    <v-btn
+      v-if="postsFromStore.length % 10 != 0"
+      block
+      disabled
+      elevation="5"
+      class="mt-5"
+      color="primary"
+      style="word-break:break-word"
+      >Fin des publications
+    </v-btn>
   </v-container>
 </template>
 

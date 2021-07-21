@@ -1,11 +1,16 @@
 require('dotenv').config()
 const express = require('express');
+const helmet = require('helmet');
+
+
 const publicationsRoutes = require('./routes/publications');
 const userRoutes =require('./routes/user');
 const replyRoutes =require('./routes/reply');
 const likeRoutes =require('./routes/like');
 
 const app =express();
+
+app.use(helmet());
 
 //HEADER POUR PERMETTRE ECHANGE ENTRE SERVEURS
 app.use((req, res, next) => {

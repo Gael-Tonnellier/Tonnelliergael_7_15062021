@@ -22,8 +22,11 @@
       <v-row>
         <v-btn class="mr-4 mt-10 primary" @click="login">Se connecter</v-btn>
         <v-btn class="mr-4 mt-10 secondary " @click="goToCreateAccount">Créer un compte</v-btn>
-        <v-alert class="mt-10" type="warning" v-if="status == 'error_login'">
+        <v-alert class="mt-10" type="warning" v-if="status == 'incorrect_password'">
           Adresse mail et/ou mot de passe invalide !
+        </v-alert>
+        <v-alert class="mt-10" type="warning" v-if="status == 'too_much_try'">
+          Trop de tentative, réesayez dans 10 minutes !
         </v-alert>
         <v-alert
           class="mt-10"

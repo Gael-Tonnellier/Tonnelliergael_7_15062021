@@ -41,7 +41,7 @@ exports.login = (req, res, next) => {
           }
           res.status(200).json({
             userId: result[0].idUsers,
-            token: jwt.sign({ userId: result[0].idUsers }, "letoken", {
+            token: jwt.sign({ userId: result[0].idUsers }, process.env.JWT_TOKEN, {
               expiresIn: "24h",
             }),
           });
@@ -70,7 +70,22 @@ exports.info = (req, res, next) => {
     }
   });
 };
-exports.update = (req, res) => {};
+exports.updateUser = (req, res,next) => {
+  let user = {
+    pseudo: req.body.pseudo,
+    email: req.body.email,
+    description: req.body.description,
+    avatar: req.body.image,
+    idUsers : req.body.userId
+  };
+  let request = `UPDATE users SET ? WHERE users.idUsers ='${user.idUsers}' `;
+  myDb.query(request, user, function (err, result) {
+    if (err) throw err;
+    else {
+      res.status(200).json({ message: "Profile mis à jour" });
+    }
+  });
+};
 
 exports.delete = (req, res, next) => {
   let request = `DELETE users.* FROM users WHERE users.idUsers='${req.params.id}' `;
