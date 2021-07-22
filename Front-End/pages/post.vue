@@ -77,13 +77,13 @@
         v-model="category"
         :items="categoryFromStore"
         item-text="name"
-        item-value="idCategory"
+        item-value="name"
         :menu-props="{ top: true, offsetY: true }"
         label="Catégorie"
         outlined
         class="mt-5"
       ></v-select>
-      <v-btn color="primary" :disabled="category == null">
+      <v-btn color="primary" :disabled="category == null" @click="getIdCategory()">
         Continuer
       </v-btn>
       <v-btn text @click="e6 = 1">
@@ -98,7 +98,7 @@
       <v-img :src="file" max-width="30%" min-width="200px" contain></v-img>
       <p>Votre titre : {{ this.title }}</p>
       <p>Votre description : {{ this.description }}</p>
-      <p>Votre catégorie : {{ this.categoryName }}</p>
+      <p>Votre catégorie : {{ category }}</p>
       <v-btn color="primary" v-if="this.mode === 'create'" @click="createMessage">
         Créer la publication
       </v-btn>
@@ -130,6 +130,7 @@ export default {
     title: "",
     description: "",
     category: null,
+    categoryId : null,
   }),
   computed: {
     ...mapState("storePost", {
@@ -138,6 +139,7 @@ export default {
     ...mapState("storeCategory",{
       categoryFromStore : "allCategory"
     }),
+     
   },
   mounted: function() {
     
@@ -146,9 +148,23 @@ export default {
       this.title = this.postToUpdate.title,
       this.description = this.postToUpdate.description
       this.mode='update';
+    }else if(this.categoryFromStore === ""){
+      this.$store.dispatch("storeCategory/getAllCategory")
     }
   },
+  watch:{
+    
+  },
   methods: {
+   getIdCategory(){
+
+        const category = this.categoryFromStore.filter(categoryToFind => categoryToFind.name === this.category);
+      const categoryId = category[0].idCategory;
+      console.log(categoryId)
+      this.categoryId = categoryId;
+      this.e6 = 5
+
+    },
     previewImage: function() {
       if (this.upload == null) {
         this.upload = null;
@@ -166,7 +182,7 @@ export default {
       const message = {
         title: this.title,
         description: this.description,
-        category: this.category,
+        category: this.categoryId,
         userId: this.$store.state.storeConnectedUser.userInfos.userId,
         image: this.file
       };
@@ -184,7 +200,7 @@ export default {
       const message = {
         title: this.title,
         description: this.description,
-        category: this.category,
+        category: this.categoryId,
         userId: this.$store.state.storeConnectedUser.userInfos.userId,
         image: this.file,
       };

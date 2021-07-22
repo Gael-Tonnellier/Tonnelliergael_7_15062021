@@ -308,7 +308,7 @@
           </v-row>
         </div>
         <div v-if="show != post.idPost" class="mt-2">
-          <v-row>
+          <v-row v-if="post.reply.length">
             <v-col cols="3" sm="1" align-self="start">
               <v-avatar size="50"
                 ><img
@@ -345,6 +345,9 @@
           </v-row>
           <p class="text-subtitle-1" v-if="post.reply.length > 1">
             {{ post.reply.length - 1 }} messages supplémentaires
+          </p>
+          <p class="text-subtitle-1" v-else>
+            Publiez le premier commentaire !
           </p>
         </div>
       </v-expand-transition>

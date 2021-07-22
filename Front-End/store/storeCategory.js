@@ -1,6 +1,6 @@
 
 export const state = () => ({
-    allCategory: {}
+    allCategory: ""
   });
   
   export const mutations = {
