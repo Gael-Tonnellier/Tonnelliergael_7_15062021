@@ -1,8 +1,10 @@
 <template>
   <v-container fluid style="max-width:900px">
     <v-card class="pa-6">
+      
       <v-row align="center">
         <v-col cols="12" align="center">
+          <filter-wall v-model="filterBy"/>
           <v-btn-toggle
             v-model="filterBy"
             multiple
@@ -13,23 +15,7 @@
           </v-btn-toggle>
         </v-col>
         <v-col cols="12" align="center">
-          <v-btn-toggle v-model="orderBy" mandatory class="flex-wrap ">
-            <v-btn class="ma-2">
-              <span class="mr-5">Les plus récent</span>
-              <v-icon color="primary">mdi-sort-clock-ascending</v-icon>
-            </v-btn>
-            <v-btn class="ma-2 ">
-              <span class="mr-5"> Populaires</span>
-              <v-icon color="primary">mdi-fire</v-icon>
-            </v-btn>
-            <v-btn class="ma-2">
-              <span class="mr-5">Les plus ancient</span>
-              <v-icon color="primary">mdi-sort-clock-descending</v-icon>
-            </v-btn>
-          </v-btn-toggle>
-          <v-btn block rounded color="secondary" class="ma-2 mt-5" to="/post"
-            >Poster un message</v-btn
-          >
+          <orderWall v-model="orderBy"/>
         </v-col>
       </v-row>
     </v-card>
@@ -379,9 +365,12 @@
 <script>
 import moment from "moment";
 import { mapState } from "vuex";
+import FilterWall from '../components/filterWall.vue';
+import orderWall from '../components/orderWall.vue';
 
 export default {
   layout: "home",
+  components:{FilterWall,orderWall},
   data: () => ({
     editReply: "",
     showLike: false,
