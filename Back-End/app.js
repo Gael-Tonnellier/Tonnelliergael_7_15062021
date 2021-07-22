@@ -7,6 +7,7 @@ const publicationsRoutes = require('./routes/publications');
 const userRoutes =require('./routes/user');
 const replyRoutes =require('./routes/reply');
 const likeRoutes =require('./routes/like');
+const categoryRoutes = require('./routes/category')
 
 const app =express();
 
@@ -27,6 +28,7 @@ app.use('/api/publish',publicationsRoutes);
 app.use('/api/user',userRoutes);
 app.use('/api/reply',replyRoutes);
 app.use('/api/like',likeRoutes);
+app.use('/api/category',categoryRoutes)
 
 
 module.exports = app;

@@ -75,15 +75,15 @@
     <v-stepper-content step="4">
       <v-select
         v-model="category"
-        :items="items"
+        :items="categoryFromStore"
         item-text="name"
-        item-value="id"
+        item-value="idCategory"
         :menu-props="{ top: true, offsetY: true }"
         label="Catégorie"
         outlined
         class="mt-5"
       ></v-select>
-      <v-btn color="primary" :disabled="category == null" @click="findCategory">
+      <v-btn color="primary" :disabled="category == null">
         Continuer
       </v-btn>
       <v-btn text @click="e6 = 1">
@@ -129,19 +129,18 @@ export default {
     upload: null,
     title: "",
     description: "",
-    items: [
-      { name: "Sport", id: 1 },
-      { name: "politique", id: 2 }
-    ],
     category: null,
-    categoryName: null
   }),
   computed: {
     ...mapState("storePost", {
       postToUpdate: "postToUpdate"
-    })
+    }),
+    ...mapState("storeCategory",{
+      categoryFromStore : "allCategory"
+    }),
   },
   mounted: function() {
+    
     if (this.postToUpdate) {
       this.file = this.postToUpdate.image,
       this.title = this.postToUpdate.title,
@@ -162,12 +161,6 @@ export default {
           this.file = reader.result;
         };
       }
-    },
-    findCategory: function() {
-      const item = this.items;
-      const categoryName = item.find(e => e.id === this.category);
-      this.categoryName = categoryName.name;
-      this.e6 = 5;
     },
     createMessage: function() {
       const message = {

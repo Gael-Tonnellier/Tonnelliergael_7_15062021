@@ -2,24 +2,25 @@
   <v-container fluid style="max-width:900px">
     <v-card class="pa-6">
       <v-row align="center">
-        <v-col cols="12">
-          <v-select
-            v-model="value"
-            :items="items"
-            chips
-            :menu-props="{ top: true, offsetY: true }"
-            label="Catégorie"
+        <v-col cols="12" align="center">
+          <v-btn-toggle
+            v-model="filterBy"
             multiple
-            outlined
-          ></v-select>
-          <v-btn-toggle v-model="filter_by" mandatory class="flex-wrap ">
-            <v-btn class="ma-2 ">
-              <span class="mr-5"> Populaires</span>
-              <v-icon color="primary">mdi-fire</v-icon>
-            </v-btn>
+          >
+          <v-btn v-for="category in categoryFromStore " :key="category.idCategory" :value="category.name" >
+            <p class="mb-0">{{ category.name }}</p>
+          </v-btn>
+          </v-btn-toggle>
+        </v-col>
+        <v-col cols="12" align="center">
+          <v-btn-toggle v-model="orderBy" mandatory class="flex-wrap ">
             <v-btn class="ma-2">
               <span class="mr-5">Les plus récent</span>
               <v-icon color="primary">mdi-sort-clock-ascending</v-icon>
+            </v-btn>
+            <v-btn class="ma-2 ">
+              <span class="mr-5"> Populaires</span>
+              <v-icon color="primary">mdi-fire</v-icon>
             </v-btn>
             <v-btn class="ma-2">
               <span class="mr-5">Les plus ancient</span>
@@ -32,7 +33,7 @@
         </v-col>
       </v-row>
     </v-card>
-    <v-card class="mt-10 pa-2" v-for="post in publishToDisplay" :key="post.id">
+    <v-card class="mt-10 pa-2" v-for="post in filterPublishToDisplay" :key="post.id">
       <v-row class="ma-5">
         <div class="d-flex flex-column">
           <v-card-title class="pa-0" style="word-break:break-word"
@@ -41,6 +42,9 @@
             </h2></v-card-title
           >
           <v-card-subtitle class="mt-auto pl-0"
+            ># {{ post.category }}</v-card-subtitle
+          >
+          <v-card-subtitle class=" pl-0"
             >Posté {{ date(post.date) }}</v-card-subtitle
           >
         </div>
@@ -49,7 +53,7 @@
           <p class="align-self-center mb-0 white--text">
             {{ post.authorId.pseudo }}
           </p>
-          <v-avatar class="ml-2" color="primary" size="60"
+          <v-avatar class="ml-2 align-self-center" color="primary" size="60"
             ><img
               v-if="post.authorId.avatar"
               style="object-fit : cover"
@@ -102,7 +106,9 @@
                   </p>
                 </template>
                 <v-card>
-                  <v-card-title class="primary white--text" style="word-break:break-word"
+                  <v-card-title
+                    class="primary white--text"
+                    style="word-break:break-word"
                     >Utilisateurs qui aiment cette publication</v-card-title
                   >
                   <v-divider></v-divider>
@@ -378,9 +384,8 @@ export default {
     showLike: false,
     userlike: false,
     show: null,
-    items: ["Sport", "Politique", "Travail"],
-    value: ["Sport", "Politique", "Travail"],
-    filter_by: undefined,
+    filterBy:[],
+    orderBy: undefined,
     message: "",
     reply: "",
     dialog: []
@@ -390,6 +395,7 @@ export default {
     this.$store.dispatch("storePost/getLastPost");
     this.$store.dispatch("storeLike/getAllLike");
     this.$store.dispatch("storeReply/getAllReply");
+    this.$store.dispatch("storeCategory/getAllCategory");
   },
   computed: {
     ...mapState("storePost", {
@@ -405,50 +411,71 @@ export default {
     ...mapState("storeConnectedUser", {
       user: "userInfos"
     }),
+    ...mapState("storeCategory",{
+      categoryFromStore: "allCategory"
+    }),
 
     publishToDisplay() {
+      return this.postsFromStore.map(post => {
+        let userLiked = this.likeFromStore.filter(
+          like => like.messageLike == post.idMessage
+        );
+        let reply = this.replyFromStore.filter(
+          reply => reply.replyMessage == post.idMessage
+        );
+        return {
+          idPost: post.idMessage,
+          authorId: this.allUsersFromStore.find(
+            user => user.idUsers == post.authorId
+          ),
+          title: post.title,
+          description: post.description,
+          category: post.categoryName,
+          image: post.image,
+          date: post.date,
+          userLiked: userLiked.map(like => {
+            return {
+              user: this.allUsersFromStore.find(
+                user => user.idUsers == like.userLike
+              )
+            };
+          }),
+          reply: reply.map(reply => {
+            return {
+              user: this.allUsersFromStore.find(
+                user => user.idUsers == reply.replyUser
+              ),
+              content: reply.replyContent,
+              create: reply.replyCreate,
+              idReply: reply.idReply
+            };
+          })
+        };
+      });
+    },
+    filterPublishToDisplay() {
       if (
         this.postsFromStore &&
         this.allUsersFromStore &&
         this.likeFromStore &&
         this.replyFromStore
       ) {
-        return this.postsFromStore.map(post => {
-          let userLiked = this.likeFromStore.filter(
-            like => like.messageLike == post.idMessage
-          );
-          let reply = this.replyFromStore.filter(
-            reply => reply.replyMessage == post.idMessage
-          );
-          return {
-            idPost: post.idMessage,
-            authorId: this.allUsersFromStore.find(
-              user => user.idUsers == post.authorId
-            ),
-            title: post.title,
-            description: post.description,
-            category: post.categoryName,
-            image: post.image,
-            date: post.date,
-            userLiked: userLiked.map(like => {
-              return {
-                user: this.allUsersFromStore.find(
-                  user => user.idUsers == like.userLike
-                )
-              };
-            }),
-            reply: reply.map(reply => {
-              return {
-                user: this.allUsersFromStore.find(
-                  user => user.idUsers == reply.replyUser
-                ),
-                content: reply.replyContent,
-                create: reply.replyCreate,
-                idReply: reply.idReply
-              };
-            })
-          };
-        });
+        //console.log(this.publishToDisplay);
+        const order = this.orderBy;
+        return this.publishToDisplay
+          .filter(
+            articles => 
+            this.filterBy.length ? 
+              this.filterBy.findIndex(
+                selectedValue => selectedValue === articles.category
+              ) !== -1 : articles
+          )
+          .sort(function(a, b) {
+            if (order === 0) return new Date(b.date) - new Date(a.date);
+            else if (order === 1)
+              return b.userLiked.length - a.userLiked.length;
+            else return new Date(a.date) - new Date(b.date);
+          });
       }
     }
   },

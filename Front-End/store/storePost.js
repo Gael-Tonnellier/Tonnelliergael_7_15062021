@@ -31,6 +31,7 @@ export const actions = {
     const request = await this.$api.get("/publish/last");
     console.log(request.data.message);
     commit("getLastPost", request.data.response);
+
   },
   async getAllPost({ commit }, postCount) {
     const request = await this.$api.get("/publish/getOlder"+postCount);
