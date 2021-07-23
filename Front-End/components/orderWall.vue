@@ -1,6 +1,6 @@
 <template>
 <div>
-  <v-btn-toggle v-model="orderBy" mandatory class="flex-wrap ">
+  <v-btn-toggle v-on:change="orderChange" v-model="orderBy" mandatory class="flex-wrap ">
     <v-btn class="ma-2">
       <span class="mr-5">Les plus récent</span>
       <v-icon color="primary">mdi-sort-clock-ascending</v-icon>
@@ -22,9 +22,14 @@
 
 <script>
 export default {
-  props: ["orderBy"],
   data:()=>({
-  })
+    orderBy:"",
+  }),
+    methods:{
+        orderChange(){
+            this.$emit('emitOrderBy',this.orderBy);
+        }
+    }
 };
 </script>
 

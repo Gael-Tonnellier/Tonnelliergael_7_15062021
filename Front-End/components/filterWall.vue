@@ -1,5 +1,5 @@
 <template>
-  <v-btn-toggle v-model="filterBy" multiple>
+  <v-btn-toggle v-on:change="filterChange" v-model="filterBy" multiple>
     <v-btn
       v-for="category in categoryFromStore"
       :key="category.idCategory"
@@ -11,8 +11,23 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
-  props: ["filterBy"]
+  data:()=>({
+    filterBy:"",
+  }),
+
+  computed:{
+    ...mapState("storeCategory",{
+      categoryFromStore: "allCategory"
+    }),
+    
+  },
+  methods:{
+    filterChange(){
+      this.$emit('emitFilterChange',this.filterBy);
+    }
+  }
 };
 </script>
 
