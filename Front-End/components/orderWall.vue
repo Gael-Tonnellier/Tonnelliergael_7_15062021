@@ -14,9 +14,9 @@
       <v-icon color="primary">mdi-sort-clock-descending</v-icon>
     </v-btn>
   </v-btn-toggle>
-  <v-btn block rounded color="secondary" class="ma-2 mt-5" to="/post"
+  <h1><v-btn block rounded color="primary" class="ma-2 mt-5" to="/post"
     >Poster un message</v-btn
-  >
+  ></h1>
   </div>
 </template>
 

@@ -18,7 +18,7 @@
         @click="drawer = !drawer"
       ></v-app-bar-nav-icon>
 
-      <img class="font" src="../assets/groupomania.png" />
+      <img class="font" src="../assets/groupomania.png" alt="logo groupomania" />
     </v-app-bar>
 
     <v-navigation-drawer v-model="drawer" app>

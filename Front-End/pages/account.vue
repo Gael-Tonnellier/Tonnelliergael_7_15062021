@@ -1,6 +1,6 @@
 <template>
 <v-container class="mt-10" fluid >
-    <v-card class="ma-auto pa-5" width="80%">
+    <v-card class="ma-auto pa-5" width="90%">
        <formAccount/> 
     </v-card>
     

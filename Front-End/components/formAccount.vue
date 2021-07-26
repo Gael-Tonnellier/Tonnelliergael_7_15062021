@@ -3,7 +3,7 @@
     <v-card-title v-if="mode == 'update'">
       Mettez à jour vos informations !</v-card-title
     >
-    <v-card-title v-if="mode == 'create'"> Créez votre compte !</v-card-title>
+    <v-card-title v-if="mode == 'create'" style="word-break:break-word"> Créez votre compte !</v-card-title>
     <v-card-subtitle v-if="mode == 'create' || mode == 'update'"
       >Merci de renseigner tout les champs obligatoire</v-card-subtitle
     >

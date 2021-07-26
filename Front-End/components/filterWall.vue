@@ -1,5 +1,5 @@
 <template>
-  <v-btn-toggle v-on:change="filterChange" v-model="filterBy" multiple>
+  <v-btn-toggle v-on:change="filterChange" v-model="filterBy" multiple class="flex-wrap">
     <v-btn
       v-for="category in categoryFromStore"
       :key="category.idCategory"

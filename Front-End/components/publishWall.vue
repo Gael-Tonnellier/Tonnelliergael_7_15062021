@@ -36,7 +36,7 @@
       </div>
     </v-row>
     <v-divider></v-divider>
-    <v-img class="ma-5" contain max-height="700px" :src="post.image"
+    <v-img class="ma-5" contain max-height="700px" :src="post.image" :alt="'publication de '+ post.authorId.pseudo"
       ><template v-slot:placeholder>
         <v-row class="fill-height ma-0" align="center" justify="center">
           <v-progress-circular
@@ -226,8 +226,11 @@
         <p class="text-subtitle-1" v-if="post.reply.length > 1">
           {{ post.reply.length - 1 }} messages supplémentaires
         </p>
-        <p class="text-subtitle-1" v-else>
+        <p class="text-subtitle-1" v-else-if="!post.reply.length">
           Publiez le premier commentaire !
+        </p>
+        <p class="text-subtitle-1" v-else>
+          Dernier commentaire
         </p>
       </div>
     </v-expand-transition>
